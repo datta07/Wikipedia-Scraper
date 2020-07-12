@@ -49,34 +49,53 @@ class WikiScrape:
 					pass
 		return data
 
-	def tableData(self):
+	def tableData(self,linkMode=False):
 		res = self.soup.findAll('table')
 		data={}
 		no=1
-		for i in res:
-		    temp_data=[]
-		    try:
-		        if ('infobox' in i['class']):
-		        	continue
-		    except Exception:
-		    	pass	
-		    data1=i.findAll('tr')
-		    for j in data1:
-		        child_data={}
-		        data2=j.findAll("td")
-		        for k in data2:
-		            try:
-		                child_data[k.text.replace('\n','')]=k.find('a')['href']
-		            except Exception:
-		                child_data[k.text.replace('\n','')]=None
-		        temp_data.append(child_data)
-		    data['table'+str(no)]=temp_data
-		    no+=1
+		if (linkMode):
+			for i in res:
+			    temp_data=[]
+			    try:
+			        if ('infobox' in i['class']):
+			        	continue
+			    except Exception:
+			    	pass	
+			    data1=i.findAll('tr')
+			    for j in data1:
+			        child_data={}
+			        data2=j.findAll("td")
+			        for k in data2:
+			            try:
+			                child_data[k.text.replace('\n','')]=k.find('a')['href']
+			            except Exception:
+			                child_data[k.text.replace('\n','')]=None
+			        temp_data.append(child_data)
+			    data['table'+str(no)]=temp_data
+			    no+=1
+		else:
+			for i in res:
+			    temp_data=[]
+			    try:
+			        if ('infobox' in i['class']):
+			        	continue
+			    except Exception:
+			    	pass	
+			    data1=i.findAll('tr')
+			    for j in data1:
+			        child_data=[]
+			        data2=j.findAll("td")
+			        for k in data2:
+			            child_data.append(k.text.replace('\n',''))
+			        temp_data.append(child_data)
+			    data['table'+str(no)]=temp_data
+			    no+=1
+
 		return data
 
 	def allInfo(self):
 		return {"short-description":self.descripiton(),"Info-data":self.infoBox(),"Tabuler data":self.tableData()}
 
-link='https://en.wikipedia.org/wiki/Sachin_Tendulkar'
-wiki=WikiScrape()
+link='https://en.wikipedia.org/wiki/A._P._J._Abdul_Kalam'
+wiki=WikiScrape(link)
 print(json.dumps(wiki.allInfo()))
